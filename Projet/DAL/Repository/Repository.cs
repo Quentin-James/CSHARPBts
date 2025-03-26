@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using DAL.Interfaces.IRepository;
+using DAL.Interfaces;
 
 namespace Models.Repository
 {
