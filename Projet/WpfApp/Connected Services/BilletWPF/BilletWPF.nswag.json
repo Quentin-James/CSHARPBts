@@ -1,0 +1,354 @@
+﻿{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "My API",
+    "description": "API pour la gestion des spectacles et des billets",
+    "contact": {
+      "name": "Support",
+      "email": "support@example.com"
+    },
+    "version": "v1"
+  },
+  "paths": {
+    "/api/Billets": {
+      "post": {
+        "tags": [
+          "Billets"
+        ],
+        "operationId": "Billets",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BilletDTO"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BilletDTO"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BilletDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/BilletDTO"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BilletDTO"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BilletDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Programmations": {
+      "post": {
+        "tags": [
+          "Programmations"
+        ],
+        "operationId": "Programmations",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProgrammationDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProgrammationDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProgrammationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgrammationDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgrammationDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgrammationDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Spectacle": {
+      "post": {
+        "tags": [
+          "Spectacle"
+        ],
+        "operationId": "Spectacle",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SpectacleDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SpectacleDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SpectacleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/TypesTarifs": {
+      "post": {
+        "tags": [
+          "TypesTarifs"
+        ],
+        "operationId": "TypesTarifs",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TypesTarifDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TypesTarifDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/TypesTarifDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypesTarifDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypesTarifDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypesTarifDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/WeatherForecast": {
+      "get": {
+        "tags": [
+          "WeatherForecast"
+        ],
+        "operationId": "GetWeatherForecast",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WeatherForecast"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WeatherForecast"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WeatherForecast"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BilletDTO": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "civilite": {
+            "type": "string",
+            "nullable": true
+          },
+          "nom": {
+            "type": "string",
+            "nullable": true
+          },
+          "prenom": {
+            "type": "string",
+            "nullable": true
+          },
+          "prixAchat": {
+            "type": "number",
+            "format": "double"
+          },
+          "tarifId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "programmationId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        }
+      },
+      "ProgrammationDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "programmationId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "heure": {
+            "type": "string",
+            "format": "time"
+          },
+          "lieu": {
+            "type": "string",
+            "nullable": true
+          },
+          "spectacleId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "SpectacleDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "spectacleId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "titre": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "duree": {
+            "type": "string",
+            "format": "time",
+            "nullable": true
+          }
+        }
+      },
+      "TypesTarifDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "nomTarif": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "WeatherForecast": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "temperatureC": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "temperatureF": {
+            "type": "integer",
+            "readOnly": true,
+            "format": "int32"
+          },
+          "summary": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      }
+    }
+  }
+}
