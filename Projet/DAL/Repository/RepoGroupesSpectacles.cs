@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DAL.Interfaces;
+using Models.Repository;
+using DAL.Modeles;
+using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repository
 {
-    class RepoGroupesSpectacles
+    internal class RepoGroupesSpectacles : Repository<GroupesSpectacle>, IRepository<GroupesSpectacle>
     {
+        public RepoGroupesSpectacles(AppDbContext context) : base(context)
+        {
+        }
     }
 }
+
