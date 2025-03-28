@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Services.CsvImport;
 using Services.Injection; // Pour l'injection de la couche Service
 using System;
 using System.Windows;
@@ -29,7 +30,7 @@ namespace WPF
                 {
                     // Configurer la DAL
                     services.ConfigureSqlServerContext(context.Configuration);
-                    DataAccess.Extensions.Injection.AddRepositories(services);
+                    DataAccess.Extensions.Injection.AddRepositories(services, context.Configuration);
 
                     // Configurer les services métier
                     Services.Injection.ServiceInjection.AddServiceLayer(services, context.Configuration);
@@ -55,3 +56,4 @@ namespace WPF
         }
     }
 }
+
