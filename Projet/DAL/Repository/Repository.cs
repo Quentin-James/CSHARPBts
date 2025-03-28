@@ -5,7 +5,7 @@ using DAL.Interfaces;
 
 namespace Models.Repository
 {
-    internal abstract class Repository<T> : IRepository<T> where T : class
+    internal class Repository<T> : IRepository<T> where T : class
     {
         protected readonly DbContext _context;
         protected readonly DbSet<T> _dbSet;

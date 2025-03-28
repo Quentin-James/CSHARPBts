@@ -23,4 +23,5 @@ namespace DAL.Interfaces
             Expression<Func<T, IProperty>>? navigationPropertyPath = null,
             bool asNoTracking = true);
     }
+
 }

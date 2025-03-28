@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DAL.Interfaces;
+using Models.Repository;
+using DAL.Modeles;
+using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repository
 {
-    class RepoTarifsSpectacles
+    internal class RepoTarifsSpectacles : Repository<TarifsSpectacle>, IRepository<TarifsSpectacle>
     {
+        public RepoTarifsSpectacles(AppDbContext context) : base(context)
+        {
+        }
     }
 }
+

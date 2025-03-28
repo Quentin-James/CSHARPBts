@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DAL.Interfaces;
+using Models.Repository;
+using DAL.Modeles;
+using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repository
 {
-    class RepoBillets
+    internal class RepoBillets : Repository<Billet>, IRepository<Billet>
     {
+        public RepoBillets(AppDbContext context) : base(context)
+        {
+        }
     }
 }
+
