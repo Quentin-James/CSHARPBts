@@ -33,14 +33,16 @@ namespace Controllers
 
             var groupesSpectacle = new GroupesSpectacle
             {
-                GroupeId = groupesSpectacleDto.GroupeId,
                 NomGroupe = groupesSpectacleDto.NomGroupe
             };
 
             _context.GroupesSpectacles.Add(groupesSpectacle);
-            await _context.SaveChangesAsync(); 
+            await _context.SaveChangesAsync();
+
+            groupesSpectacleDto.GroupeId = groupesSpectacle.GroupeId; // Mise à jour du DTO avec l'ID généré
 
             return CreatedAtAction(nameof(CreateGroupesSpectacle), new { id = groupesSpectacle.GroupeId }, groupesSpectacleDto);
         }
     }
 }
+
