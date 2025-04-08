@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Services.CsvImport;
+using Services.DTOs;
 using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 
 namespace WebApplication1.Controllers
 {
@@ -26,10 +28,15 @@ namespace WebApplication1.Controllers
 
     
         [HttpPost("spectacles")]
-        public async Task<IActionResult> ImportSpectacles(IFormFile file)
+        public async Task<ActionResult<ImportResultDto>> ImportSpectacles(IFormFile file)
         {
             if (file == null || file.Length == 0)
-                return BadRequest("Le fichier est vide");
+                return BadRequest(new ImportResultDto 
+                { 
+                    Success = false, 
+                    Message = "Le fichier est vide",
+                    Errors = new List<string> { "Le fichier est vide" }
+                });
 
             var filePath = Path.GetTempFileName();
             try
@@ -40,12 +47,21 @@ namespace WebApplication1.Controllers
                 }
 
                 await _csvImportService.ImportSpectaclesAsync(filePath);
-                return Ok("Spectacles importés avec succès");
+                return Ok(new ImportResultDto 
+                { 
+                    Success = true, 
+                    Message = "Spectacles importés avec succès",
+                    ImportedCount = 1 
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erreur d'importation des spectacles");
-                return StatusCode(500, $"Erreur: {ex.Message}");
+                return StatusCode(500, new ImportResultDto 
+                { 
+                    Success = false, 
+                    Message = $"Erreur: {ex.Message}",
+                    Errors = new List<string> { ex.Message }
+                });
             }
             finally
             {
@@ -56,10 +72,15 @@ namespace WebApplication1.Controllers
 
     
         [HttpPost("billets")]
-        public async Task<IActionResult> ImportBillets(IFormFile file)
+        public async Task<ActionResult<ImportResultDto>> ImportBillets(IFormFile file)
         {
             if (file == null || file.Length == 0)
-                return BadRequest("Le fichier est vide");
+                return BadRequest(new ImportResultDto 
+                { 
+                    Success = false, 
+                    Message = "Le fichier est vide",
+                    Errors = new List<string> { "Le fichier est vide" }
+                });
 
             var filePath = Path.GetTempFileName();
             try
@@ -70,12 +91,21 @@ namespace WebApplication1.Controllers
                 }
 
                 await _csvImportService.ImportBilletsAsync(filePath);
-                return Ok("Billets importés avec succès");
+                return Ok(new ImportResultDto 
+                { 
+                    Success = true, 
+                    Message = "Billets importés avec succès",
+                    ImportedCount = 1 
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erreur d'importation des billets");
-                return StatusCode(500, $"Erreur: {ex.Message}");
+                return StatusCode(500, new ImportResultDto 
+                { 
+                    Success = false, 
+                    Message = $"Erreur: {ex.Message}",
+                    Errors = new List<string> { ex.Message }
+                });
             }
             finally
             {

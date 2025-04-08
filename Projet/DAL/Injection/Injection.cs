@@ -30,19 +30,13 @@ namespace DataAccess.Extensions
 
         public static IServiceCollection AddRepositories(this IServiceCollection services, IConfiguration config)
         {
-            services.AddScoped<IRepository<Artiste>, RepoArtistes>();
+            // Ne garder que les repositories essentiels pour l'API
             services.AddScoped<IRepository<Spectacle>, RepoSpectacles>();
-            services.AddScoped<IRepository<TarifsSpectacle>, RepoTarifsSpectacles>();
-            services.AddScoped<IRepository<TypesTarif>, RepoTypesTarifs>();
-            services.AddScoped<IRepository<Billet>, RepoBillets>();
-            services.AddScoped<IRepository<TarifsGroupe>, RepoTarifsGroupes>();
-            services.AddScoped<IRepository<ArtisestSpectacles>, RepoArtistesSpectacles>();
-            services.AddScoped<IRepository<GroupesSpectacle>, RepoGroupesSpectacles>();
             services.AddScoped<IRepository<Programmation>, RepoProgrammation>();
-            services.AddScoped<IRepository<GroupesSpectaclesOrganisation>, RepoGroupesSpectaclesOrganisation>();
+            services.AddScoped<IRepository<Billet>, RepoBillets>();
 
             // Register generic repository
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>)); // Ajout de cette ligne
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
             return services;
         }

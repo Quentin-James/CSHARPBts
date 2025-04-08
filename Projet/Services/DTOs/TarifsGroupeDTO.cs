@@ -1,4 +1,4 @@
-﻿namespace Services.DTOs
+namespace Services.DTOs
 {
     public class TarifsGroupeDto
     {
