@@ -4,7 +4,7 @@ using Services.DTOs;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Controllers
+namespace WebApplication1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -12,18 +12,13 @@ namespace API.Controllers
     {
         private readonly AppDbContext _context;
 
-        public SpectacleController(AppDbContext context)
-        {
-            _context = context;
-        }
+        public SpectacleController(AppDbContext context) => _context = context;
 
         [HttpPost]
-        public async Task<IActionResult> CreateSpectacle([FromBody] SpectacleDto spectacleDto)
+        public async Task<IActionResult> CreateSpectacle(SpectacleDto spectacleDto)
         {
             if (spectacleDto == null)
-            {
-                return BadRequest("Les données du spectacle sont invalides.");
-            }
+                return BadRequest("Les données du spectacle sont invalides");
 
             var spectacle = new Spectacle
             {
@@ -33,7 +28,7 @@ namespace API.Controllers
                 Duree = spectacleDto.Duree
             };
 
-            _context.Set<Spectacle>().Add(spectacle);
+            _context.Spectacles.Add(spectacle);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(CreateSpectacle), new { id = spectacle.SpectacleId }, spectacle);

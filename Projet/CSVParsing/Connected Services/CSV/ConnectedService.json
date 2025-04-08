@@ -5,9 +5,9 @@
     "Uri": "https://github.com/unchase/Unchase.OpenAPI.Connectedservice/"
   },
   "ExtendedData": {
-    "ServiceName": "BilletWPF",
+    "ServiceName": "CSV",
     "AcceptAllUntrustedCertificates": true,
-    "GeneratedFileName": "BilletWPF",
+    "GeneratedFileName": "CSV",
     "Endpoint": "C:\\Users\\EPSI\\Downloads\\swagger.json",
     "GeneratedFileNamePrefix": null,
     "GenerateCSharpClient": true,
@@ -59,7 +59,7 @@
       "WrapResponseMethods": [],
       "GenerateResponseClasses": true,
       "ResponseClass": "SwaggerResponse",
-      "Namespace": "WpfApp.BilletWPF",
+      "Namespace": "CSVParsing.CSV",
       "RequiredPropertiesMustBeDefined": true,
       "DateType": "System.DateTimeOffset",
       "JsonConverters": null,
@@ -96,7 +96,7 @@
       "EnumNameGeneratorType": null,
       "ServiceHost": null,
       "ServiceSchemes": null,
-      "output": "BilletWPF.cs",
+      "output": "CSV.cs",
       "newLineBehavior": 0
     },
     "ExcludeTypeNamesLater": false,

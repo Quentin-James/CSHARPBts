@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Services\Servic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication1", "WebApplication1\WebApplication1.csproj", "{661D85EC-85E2-446B-9A50-956E0BEFB28C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApp", "WpfApp\WpfApp.csproj", "{37C364C1-561A-4647-AB1C-55F0E98F7D58}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSVParsing", "CSVParsing\CSVParsing.csproj", "{6E52EE63-34F2-488D-8671-7CF5FF123DEC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{661D85EC-85E2-446B-9A50-956E0BEFB28C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{661D85EC-85E2-446B-9A50-956E0BEFB28C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{661D85EC-85E2-446B-9A50-956E0BEFB28C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{37C364C1-561A-4647-AB1C-55F0E98F7D58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{37C364C1-561A-4647-AB1C-55F0E98F7D58}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{37C364C1-561A-4647-AB1C-55F0E98F7D58}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{37C364C1-561A-4647-AB1C-55F0E98F7D58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E52EE63-34F2-488D-8671-7CF5FF123DEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E52EE63-34F2-488D-8671-7CF5FF123DEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E52EE63-34F2-488D-8671-7CF5FF123DEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E52EE63-34F2-488D-8671-7CF5FF123DEC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

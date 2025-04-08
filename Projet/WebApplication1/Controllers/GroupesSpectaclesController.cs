@@ -4,7 +4,7 @@ using DAL.Modeles;
 using Services.DTOs;
 using System.Threading.Tasks;
 
-namespace Controllers
+namespace WebApplication1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -12,36 +12,30 @@ namespace Controllers
     {
         private readonly AppDbContext _context;
 
-        public GroupesSpectaclesController(AppDbContext context)
-        {
-            _context = context;
-        }
+        public GroupesSpectaclesController(AppDbContext context) => _context = context;
 
         [HttpPost]
-        public async Task<ActionResult<GroupesSpectacleDto>> CreateGroupesSpectacle([FromBody] GroupesSpectacleDto groupesSpectacleDto)
+        public async Task<ActionResult<GroupesSpectacleDto>> CreateGroupesSpectacle(GroupesSpectacleDto dto)
         {
-            if (groupesSpectacleDto == null)
-                return BadRequest("Les données du groupe de spectacle sont invalides.");
+            if (dto == null)
+                return BadRequest("Les données du groupe sont invalides");
 
-            var tarifExiste = await _context.TypesTarifs.AnyAsync(t => t.TarifId == groupesSpectacleDto.TarifId);
-            var programmationExiste = await _context.Programmations.AnyAsync(p => p.ProgrammationId == groupesSpectacleDto.ProgrammationId);
+            var tarifExiste = await _context.TypesTarifs.AnyAsync(t => t.TarifId == dto.TarifId);
+            var programmationExiste = await _context.Programmations.AnyAsync(p => p.ProgrammationId == dto.ProgrammationId);
 
             if (!tarifExiste)
-                return BadRequest("Le tarif spécifié n'existe pas.");
+                return BadRequest("Tarif inexistant");
+                
             if (!programmationExiste)
-                return BadRequest("La programmation spécifiée n'existe pas.");
+                return BadRequest("Programmation inexistante");
 
-            var groupesSpectacle = new GroupesSpectacle
-            {
-                NomGroupe = groupesSpectacleDto.NomGroupe
-            };
-
-            _context.GroupesSpectacles.Add(groupesSpectacle);
+            var groupe = new GroupesSpectacle { NomGroupe = dto.NomGroupe };
+            
+            _context.GroupesSpectacles.Add(groupe);
             await _context.SaveChangesAsync();
 
-            groupesSpectacleDto.GroupeId = groupesSpectacle.GroupeId; // Mise à jour du DTO avec l'ID généré
-
-            return CreatedAtAction(nameof(CreateGroupesSpectacle), new { id = groupesSpectacle.GroupeId }, groupesSpectacleDto);
+            dto.GroupeId = groupe.GroupeId;
+            return CreatedAtAction(nameof(CreateGroupesSpectacle), new { id = groupe.GroupeId }, dto);
         }
     }
 }
