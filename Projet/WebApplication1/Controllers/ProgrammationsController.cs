@@ -4,7 +4,7 @@ using DAL.Modeles;
 using Services.DTOs;
 using System.Threading.Tasks;
 
-namespace Controllers
+namespace WebApplication1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -12,21 +12,17 @@ namespace Controllers
     {
         private readonly AppDbContext _context;
 
-        public ProgrammationsController(AppDbContext context)
-        {
-            _context = context;
-        }
+        public ProgrammationsController(AppDbContext context) => _context = context;
 
         [HttpPost]
-        public async Task<ActionResult<ProgrammationDto>> CreateProgrammation([FromBody] ProgrammationDto programmationDto)
+        public async Task<ActionResult<ProgrammationDto>> CreateProgrammation(ProgrammationDto programmationDto)
         {
             if (programmationDto == null)
-                return BadRequest("Les données de programmation sont invalides.");
+                return BadRequest("Les données de programmation sont invalides");
 
-            // Vérifier si le spectacle existe
             var spectacleExiste = await _context.Spectacles.AnyAsync(s => s.SpectacleId == programmationDto.SpectacleId);
             if (!spectacleExiste)
-                return BadRequest("Le spectacle spécifié n'existe pas.");
+                return BadRequest("Spectacle inexistant");
 
             var programmation = new Programmation
             {
@@ -39,7 +35,8 @@ namespace Controllers
             _context.Programmations.Add(programmation);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(CreateProgrammation), new { id = programmation.ProgrammationId }, programmationDto);
+            return CreatedAtAction(nameof(CreateProgrammation), 
+                new { id = programmation.ProgrammationId }, programmationDto);
         }
     }
 }

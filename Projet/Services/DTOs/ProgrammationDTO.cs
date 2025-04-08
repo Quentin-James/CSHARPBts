@@ -7,5 +7,6 @@
         public TimeOnly Heure { get; set; }
         public string Lieu { get; set; }
         public int SpectacleId { get; set; }
+        public DateTime DateHeure => Date.ToDateTime(Heure);
     }
 }

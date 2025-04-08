@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "name": "C#: CSVParsing",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}\\CSVParsing\\CSVParsing.csproj",
+            "launchConfigurationId": "TargetFramework=;CSVParsing"
+        }
+    ]
+}

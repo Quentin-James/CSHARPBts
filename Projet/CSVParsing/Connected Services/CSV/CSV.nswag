@@ -4,7 +4,7 @@
   "documentGenerator": {
     "fromDocument": {
       "url": "C:\\Users\\EPSI\\Downloads\\swagger.json",
-      "output": "BilletWPF.nswag.json",
+      "output": "CSV.nswag.json",
       "newLineBehavior": "Auto"
     }
   },
@@ -55,7 +55,7 @@
       "wrapResponseMethods": [],
       "generateResponseClasses": true,
       "responseClass": "SwaggerResponse",
-      "namespace": "WpfApp.BilletWPF",
+      "namespace": "CSVParsing.CSV",
       "requiredPropertiesMustBeDefined": true,
       "dateType": "System.DateTimeOffset",
       "jsonConverters": null,
@@ -92,7 +92,7 @@
       "enumNameGeneratorType": null,
       "serviceHost": null,
       "serviceSchemes": null,
-      "output": "BilletWPF.cs",
+      "output": "CSV.cs",
       "newLineBehavior": "Auto"
     }
   }

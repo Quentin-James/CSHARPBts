@@ -1,60 +1,49 @@
-using DataAccess.Extensions;
 using Microsoft.OpenApi.Models;
-using Services.Interfaces;
-using Services;
-using Microsoft.AspNetCore.Identity;
-using DAL.Interfaces;
-using Models.Repository;
-using DAL.Modeles;
 using Microsoft.EntityFrameworkCore;
+using System;
+using Services.CsvImport;
+using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Ajout des services nécessaires
+// Database
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+    ?? throw new Exception("ConnectionString 'DefaultConnection' manquante");
+builder.Services.AddDbContext<DAL.Modeles.AppDbContext>(opt => opt.UseSqlServer(connectionString));
+
+// Services
+builder.Services.AddScoped<ICsvImportService, CsvImportService>();
 builder.Services.AddControllers();
-
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// Swagger : Ajout de la documentation de l'API
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "My API",
-        Version = "v1",
-        Description = "API pour la gestion des spectacles et des billets",
-        Contact = new OpenApiContact
-        {
-            Name = "Support",
-            Email = "support@example.com"
-        }
-    });
-});
 
+// Swagger
+builder.Services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo { 
+    Title = "API CSV Import", 
+    Version = "v1" 
+}));
 
+// Logging
+builder.Logging.AddConsole().SetMinimumLevel(LogLevel.Information);
+
+// CORS
+builder.Services.AddCors(opt => opt.AddPolicy("AllowAll", 
+    policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
+
+// Build and configure app
 var app = builder.Build();
 
-app.UseStaticFiles();
-
-app.UseSwagger();
-app.UseSwaggerUI(c =>
+if (app.Environment.IsDevelopment())
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-    c.RoutePrefix = string.Empty;  // Cette ligne permettra d'accéder directement à Swagger à la racine (localhost:port/).
-});
+    app.UseSwagger();
+    app.UseSwaggerUI(c => {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "API CSV Import v1");
+        c.RoutePrefix = string.Empty;
+    });
+}
 
-// Middleware pour rediriger les requêtes HTTP vers HTTPS
 app.UseHttpsRedirection();
-
-// Middleware pour gérer l'autorisation (si vous utilisez l'authentification)
 app.UseAuthorization();
-
-// Mapping des contrôleurs
+app.UseCors("AllowAll");
 app.MapControllers();
-
-// Configurer une route par défaut pour servir l'index.html (utile si vous avez un frontend à servir)
-app.MapFallbackToFile("index.html");
 
 app.Run();
