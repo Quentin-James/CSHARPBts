@@ -37,13 +37,13 @@ namespace Services.CsvImport
             string? line;
             int lineNumber = 0;
             var errors = new List<string>();
-            
+
             while ((line = await reader.ReadLineAsync()) != null)
             {
                 lineNumber++;
                 try
                 {
-                    var columns = line.Split(';');
+                var columns = line.Split(';');
                     if (columns.Length < 7) 
                     {
                         errors.Add($"Données invalides à la ligne {lineNumber}: colonnes insuffisantes");
@@ -54,7 +54,7 @@ namespace Services.CsvImport
                     try
                     {
                         // Créer spectacle
-                        var spectacle = new Spectacle
+                var spectacle = new Spectacle
                         {
                             Titre = Truncate(columns[1].Trim(), 20),
                             Description = columns[2].Trim(),
@@ -198,7 +198,7 @@ namespace Services.CsvImport
             string? line;
             int lineNumber = 0;
             var errors = new List<string>();
-            
+
             while ((line = await reader.ReadLineAsync()) != null)
             {
                 lineNumber++;
@@ -239,7 +239,7 @@ namespace Services.CsvImport
                         var tarif = await GetOrCreateTarif(typeTarifNom);
                         var programmation = await GetOrCreateProgrammation(spectacle.SpectacleId, horaire, lieu);
 
-                        var billet = new Billet
+                var billet = new Billet
                         {
                             Civilite = civilite,
                             Nom = nom,
@@ -324,7 +324,7 @@ namespace Services.CsvImport
                     SpectacleId = spectacleId
                 };
                 _dbContext.Programmations.Add(programmation);
-                await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
             }
             
             return programmation;
