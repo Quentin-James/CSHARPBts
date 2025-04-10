@@ -59,7 +59,8 @@ namespace Services.CsvImport
                             Titre = Truncate(columns[1].Trim(), 20),
                             Description = columns[2].Trim(),
                             Type = Truncate(columns[6].Trim(), 20),
-                            Duree = ParseDuration(columns[7])
+                            Duree = ParseDuration(columns[7]),
+                            Saison = columns[0].Trim()
                         };
                         _dbContext.Spectacles.Add(spectacle);
                         await _dbContext.SaveChangesAsync();
