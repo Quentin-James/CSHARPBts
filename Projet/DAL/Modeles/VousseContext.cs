@@ -173,6 +173,29 @@ namespace DAL.Modeles
                 entity.Property(e => e.Type)
                     .HasMaxLength(20)
                     .IsUnicode(false);
+                entity.Property(e => e.Saison)
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+                entity.Property(e => e.DeconseilleAuxEnfants)
+                    .HasDefaultValue(false);
+
+                entity.HasOne(d => d.SpectacleEnfant1)
+                    .WithMany(p => p.SpectaclesParent1)
+                    .HasForeignKey(d => d.SpectacleEnfant1Id)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Spectacle_SpectacleEnfant1");
+
+                entity.HasOne(d => d.SpectacleEnfant2)
+                    .WithMany(p => p.SpectaclesParent2)
+                    .HasForeignKey(d => d.SpectacleEnfant2Id)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Spectacle_SpectacleEnfant2");
+
+                entity.HasOne(d => d.SpectacleEnfant3)
+                    .WithMany(p => p.SpectaclesParent3)
+                    .HasForeignKey(d => d.SpectacleEnfant3Id)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Spectacle_SpectacleEnfant3");
             });
 
             modelBuilder.Entity<TarifsGroupe>(entity =>
