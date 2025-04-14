@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using DAL.Modeles;
-using Services.DTOs;
+using Services.Interfaces;
 using System.Threading.Tasks;
 
 namespace WebApplication1.Controllers
@@ -10,32 +8,22 @@ namespace WebApplication1.Controllers
     [ApiController]
     public class GroupesSpectaclesController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IGroupeSpectacleService _groupeSpectacleService;
 
-        public GroupesSpectaclesController(AppDbContext context) => _context = context;
-
-        [HttpPost]
-        public async Task<ActionResult<GroupesSpectacleDto>> CreateGroupesSpectacle(GroupesSpectacleDto dto)
+        public GroupesSpectaclesController(IGroupeSpectacleService groupeSpectacleService)
         {
-            if (dto == null)
-                return BadRequest("Les données du groupe sont invalides");
+            _groupeSpectacleService = groupeSpectacleService;
+        }
 
-            var tarifExiste = await _context.TypesTarifs.AnyAsync(t => t.TarifId == dto.TarifId);
-            var programmationExiste = await _context.Programmations.AnyAsync(p => p.ProgrammationId == dto.ProgrammationId);
-
-            if (!tarifExiste)
-                return BadRequest("Tarif inexistant");
-                
-            if (!programmationExiste)
-                return BadRequest("Programmation inexistante");
-
-            var groupe = new GroupesSpectacle { NomGroupe = dto.NomGroupe };
-            
-            _context.GroupesSpectacles.Add(groupe);
-            await _context.SaveChangesAsync();
-
-            dto.GroupeId = groupe.GroupeId;
-            return CreatedAtAction(nameof(CreateGroupesSpectacle), new { id = groupe.GroupeId }, dto);
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var groupeSpectacle = await _groupeSpectacleService.GetByIdAsync(id);
+            if (groupeSpectacle == null)
+            {
+                return NotFound();
+            }
+            return Ok(groupeSpectacle);
         }
     }
 }

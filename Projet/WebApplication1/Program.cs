@@ -1,22 +1,17 @@
-using DataAccess.Extensions;
 using Microsoft.OpenApi.Models;
 using Services;
 using Microsoft.AspNetCore.Identity;
-using DAL.Interfaces;
-using Models.Repository;
-using DAL.Modeles;
-using Microsoft.EntityFrameworkCore;
 using System;
 using Services.CsvImport;
 using Microsoft.Extensions.Logging;
+using Services.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
     ?? throw new Exception("ConnectionString 'DefaultConnection' manquante");
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(connectionString));
+builder.Services.ConfigureDatabase(connectionString);
 
 // Services
 builder.Services.AddScoped<ICsvImportService, CsvImportService>();
