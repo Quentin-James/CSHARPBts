@@ -43,7 +43,7 @@ namespace Services.CsvImport
                 lineNumber++;
                 try
                 {
-                var columns = line.Split(';');
+                    var columns = line.Split(';');
                     if (columns.Length < 7) 
                     {
                         errors.Add($"Données invalides à la ligne {lineNumber}: colonnes insuffisantes");
@@ -53,8 +53,8 @@ namespace Services.CsvImport
                     using var transaction = await _dbContext.Database.BeginTransactionAsync();
                     try
                     {
-                        // Créer spectacle
-                var spectacle = new Spectacle
+                        // Créer le spectacle
+                        var spectacle = new Spectacle
                         {
                             Titre = Truncate(columns[1].Trim(), 20),
                             Description = columns[2].Trim(),
@@ -64,15 +64,15 @@ namespace Services.CsvImport
                         };
                         _dbContext.Spectacles.Add(spectacle);
                         await _dbContext.SaveChangesAsync();
-                        
-                        // Ajouter artistes
+
+                        // Ajouter les artistes
                         for (int i = 3; i <= 5; i++)
                         {
                             if (i < columns.Length && !string.IsNullOrWhiteSpace(columns[i]))
                                 await AddArtiste(spectacle.SpectacleId, Truncate(columns[i].Trim(), 15));
                         }
-                        
-                        // Ajouter tarifs
+
+                        // Ajouter les tarifs
                         if (columns.Length > 10)
                         {
                             if (decimal.TryParse(columns[8], NumberStyles.Any, CultureInfo.InvariantCulture, out decimal tarifPlein))
@@ -84,8 +84,8 @@ namespace Services.CsvImport
                             if (decimal.TryParse(columns[10], NumberStyles.Any, CultureInfo.InvariantCulture, out decimal tarifEnfant))
                                 await AddTarif(spectacle.SpectacleId, "Enfant", tarifEnfant);
                         }
-                        
-                        // Ajouter programmation
+
+                        // Ajouter la programmation
                         if (columns.Length > 12 && !string.IsNullOrWhiteSpace(columns[11]) && !string.IsNullOrWhiteSpace(columns[12]))
                         {
                             if (DateTime.TryParse(columns[11].Trim(), CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateHeure))
@@ -93,7 +93,36 @@ namespace Services.CsvImport
                                 await AddProgrammation(spectacle.SpectacleId, dateHeure, Truncate(columns[12].Trim(), 20));
                             }
                         }
-                        
+
+                        // Gérer les spectacles enfants
+                        if (columns.Length > 15)
+                        {
+                            if (!string.IsNullOrWhiteSpace(columns[13]))
+                            {
+                                var enfant1 = await GetOrCreateSpectacle(columns[13].Trim());
+                                spectacle.SpectacleEnfant1Id = enfant1.SpectacleId;
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(columns[14]))
+                            {
+                                var enfant2 = await GetOrCreateSpectacle(columns[14].Trim());
+                                spectacle.SpectacleEnfant2Id = enfant2.SpectacleId;
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(columns[15]))
+                            {
+                                var enfant3 = await GetOrCreateSpectacle(columns[15].Trim());
+                                spectacle.SpectacleEnfant3Id = enfant3.SpectacleId;
+                            }
+
+                            // Gérer déconseilléAuxEnfants
+                            if (columns.Length > 16)
+                            {
+                                spectacle.DeconseilleAuxEnfants = columns[16].Trim().ToLower() == "true";
+                            }
+                        }
+
+                        await _dbContext.SaveChangesAsync();
                         await transaction.CommitAsync();
                     }
                     catch (Exception)
@@ -325,7 +354,7 @@ namespace Services.CsvImport
                     SpectacleId = spectacleId
                 };
                 _dbContext.Programmations.Add(programmation);
-            await _dbContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync();
             }
             
             return programmation;

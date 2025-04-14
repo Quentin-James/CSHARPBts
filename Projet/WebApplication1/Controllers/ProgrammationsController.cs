@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using DAL.Modeles;
-using Services.DTOs;
+using Services.Interfaces;
 using System.Threading.Tasks;
 
 namespace WebApplication1.Controllers
@@ -10,33 +8,22 @@ namespace WebApplication1.Controllers
     [ApiController]
     public class ProgrammationsController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IProgrammationService _programmationService;
 
-        public ProgrammationsController(AppDbContext context) => _context = context;
-
-        [HttpPost]
-        public async Task<ActionResult<ProgrammationDto>> CreateProgrammation(ProgrammationDto programmationDto)
+        public ProgrammationsController(IProgrammationService programmationService)
         {
-            if (programmationDto == null)
-                return BadRequest("Les données de programmation sont invalides");
+            _programmationService = programmationService;
+        }
 
-            var spectacleExiste = await _context.Spectacles.AnyAsync(s => s.SpectacleId == programmationDto.SpectacleId);
-            if (!spectacleExiste)
-                return BadRequest("Spectacle inexistant");
-
-            var programmation = new Programmation
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var programmation = await _programmationService.GetByIdAsync(id);
+            if (programmation == null)
             {
-                Date = programmationDto.Date,
-                Heure = programmationDto.Heure,
-                Lieu = programmationDto.Lieu,
-                SpectacleId = programmationDto.SpectacleId
-            };
-
-            _context.Programmations.Add(programmation);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(CreateProgrammation), 
-                new { id = programmation.ProgrammationId }, programmationDto);
+                return NotFound();
+            }
+            return Ok(programmation);
         }
     }
 }

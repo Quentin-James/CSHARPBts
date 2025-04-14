@@ -45,7 +45,7 @@ namespace CSVParsing
                 {
                     ImportButton.IsEnabled = false;
                     ProgressBar.Visibility = Visibility.Visible;
-                    ProgressBar.IsIndeterminate = true;
+                    ProgressBar.Value = 0;
 
                     await ImportCsvAsync(openFileDialog.FileName);
                     MessageBox.Show("Importation réussie.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -92,25 +92,36 @@ namespace CSVParsing
                 {
                     ImportButton.IsEnabled = true;
                     ProgressBar.Visibility = Visibility.Collapsed;
-                    ProgressBar.IsIndeterminate = false;
                 }
             }
         }
 
         private async Task ImportCsvAsync(string filePath)
         {
+            var lines = await File.ReadAllLinesAsync(filePath);
+            var totalLines = lines.Length - 1; // -1 pour l'en-tête
+            var processedLines = 0;
+
+            var firstLine = lines.First();
+            var columnCount = firstLine.Split(';').Length;
+            var endpoint = columnCount == 9 ? "billets" : "spectacles";
+
             using var form = new MultipartFormDataContent();
             using var fileStream = File.OpenRead(filePath);
             using var streamContent = new StreamContent(fileStream);
             
             form.Add(streamContent, "file", Path.GetFileName(filePath));
 
-            var firstLine = File.ReadLines(filePath).First();
-            var columnCount = firstLine.Split(';').Length;
-            var endpoint = columnCount == 9 ? "billets" : "spectacles";
-
             var response = await _httpClient.PostAsync($"api/csv-import/{endpoint}", form);
             response.EnsureSuccessStatusCode();
+
+            // Mise à jour de la progression
+            while (processedLines < totalLines)
+            {
+                processedLines++;
+                ProgressBar.Value = (double)processedLines / totalLines * 100;
+                await Task.Delay(10); // Petit délai pour voir la progression
+            }
         }
     }
 }
