@@ -2,7 +2,6 @@
 using DAL.Modeles;
 using DAL.Repository;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,6 +32,8 @@ namespace DataAccess.Extensions
             services.AddScoped<IRepository<Spectacle>, RepoSpectacles>();
             services.AddScoped<IRepository<Programmation>, RepoProgrammation>();
             services.AddScoped<IRepository<Billet>, RepoBillets>();
+            services.AddScoped<IRepository<GroupesSpectacle>, RepoGroupesSpectacle>();
+            services.AddScoped<IRepository<TypesTarif>, RepoTypesTarif>();
 
             // Register generic repository
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));

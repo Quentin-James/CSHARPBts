@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace DAL.Modeles;
+﻿namespace DAL.Modeles;
 
 public partial class TarifsGroupe
 {

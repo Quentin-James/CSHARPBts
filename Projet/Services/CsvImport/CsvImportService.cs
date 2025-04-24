@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Threading.Tasks;
 using DAL.Modeles;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Text;
 using Microsoft.Extensions.Logging;
+using System.Globalization;
+using System.Text;
 
 namespace Services.CsvImport
 {
@@ -32,7 +27,7 @@ namespace Services.CsvImport
         {
             var encoding = GetFileEncoding(filePath);
             using var reader = new StreamReader(filePath, encoding);
-            await reader.ReadLineAsync(); // Skip header
+            await reader.ReadLineAsync(); 
             
             string? line;
             int lineNumber = 0;
@@ -53,39 +48,43 @@ namespace Services.CsvImport
                     using var transaction = await _dbContext.Database.BeginTransactionAsync();
                     try
                     {
-                        // Créer le spectacle
-                        var spectacle = new Spectacle
-                        {
-                            Titre = Truncate(columns[1].Trim(), 20),
-                            Description = columns[2].Trim(),
-                            Type = Truncate(columns[6].Trim(), 20),
-                            Duree = ParseDuration(columns[7]),
-                            Saison = columns[0].Trim()
-                        };
-                        _dbContext.Spectacles.Add(spectacle);
-                        await _dbContext.SaveChangesAsync();
+                        var titre = Truncate(columns[1].Trim(), 20);
+                        var spectacle = await _dbContext.Spectacles
+                            .FirstOrDefaultAsync(s => s.Titre == titre);
 
-                        // Ajouter les artistes
-                        for (int i = 3; i <= 5; i++)
+                        if (spectacle == null)
                         {
-                            if (i < columns.Length && !string.IsNullOrWhiteSpace(columns[i]))
-                                await AddArtiste(spectacle.SpectacleId, Truncate(columns[i].Trim(), 15));
+                            spectacle = new Spectacle
+                            {
+                                Titre = titre,
+                                Description = columns[2].Trim(),
+                                Type = Truncate(columns[6].Trim(), 20),
+                                Duree = ParseDuration(columns[7]),
+                                Saison = columns[0].Trim()
+                            };
+                            _dbContext.Spectacles.Add(spectacle);
+                            await _dbContext.SaveChangesAsync();
+
+                           
+                            for (int i = 3; i <= 5; i++)
+                            {
+                                if (i < columns.Length && !string.IsNullOrWhiteSpace(columns[i]))
+                                    await AddArtiste(spectacle.SpectacleId, Truncate(columns[i].Trim(), 15));
+                            }
+
+                            if (columns.Length > 10)
+                            {
+                                if (decimal.TryParse(columns[8], NumberStyles.Any, CultureInfo.InvariantCulture, out decimal tarifPlein))
+                                    await AddTarif(spectacle.SpectacleId, "Plein", tarifPlein);
+                                
+                                if (decimal.TryParse(columns[9], NumberStyles.Any, CultureInfo.InvariantCulture, out decimal tarifReduit))
+                                    await AddTarif(spectacle.SpectacleId, "Réduit", tarifReduit);
+                                
+                                if (decimal.TryParse(columns[10], NumberStyles.Any, CultureInfo.InvariantCulture, out decimal tarifEnfant))
+                                    await AddTarif(spectacle.SpectacleId, "Enfant", tarifEnfant);
+                            }
                         }
 
-                        // Ajouter les tarifs
-                        if (columns.Length > 10)
-                        {
-                            if (decimal.TryParse(columns[8], NumberStyles.Any, CultureInfo.InvariantCulture, out decimal tarifPlein))
-                                await AddTarif(spectacle.SpectacleId, "Plein", tarifPlein);
-                            
-                            if (decimal.TryParse(columns[9], NumberStyles.Any, CultureInfo.InvariantCulture, out decimal tarifReduit))
-                                await AddTarif(spectacle.SpectacleId, "Réduit", tarifReduit);
-                            
-                            if (decimal.TryParse(columns[10], NumberStyles.Any, CultureInfo.InvariantCulture, out decimal tarifEnfant))
-                                await AddTarif(spectacle.SpectacleId, "Enfant", tarifEnfant);
-                        }
-
-                        // Ajouter la programmation
                         if (columns.Length > 12 && !string.IsNullOrWhiteSpace(columns[11]) && !string.IsNullOrWhiteSpace(columns[12]))
                         {
                             if (DateTime.TryParse(columns[11].Trim(), CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateHeure))
@@ -94,7 +93,6 @@ namespace Services.CsvImport
                             }
                         }
 
-                        // Gérer les spectacles enfants
                         if (columns.Length > 15)
                         {
                             if (!string.IsNullOrWhiteSpace(columns[13]))
@@ -115,7 +113,6 @@ namespace Services.CsvImport
                                 spectacle.SpectacleEnfant3Id = enfant3.SpectacleId;
                             }
 
-                            // Gérer déconseilléAuxEnfants
                             if (columns.Length > 16)
                             {
                                 spectacle.DeconseilleAuxEnfants = columns[16].Trim().ToLower() == "true";
@@ -244,7 +241,7 @@ namespace Services.CsvImport
                     var civilite = Truncate(columns[1].Trim(), 10);
                     var nom = Truncate(columns[2].Trim(), 12);
                     var prenom = Truncate(columns[3].Trim(), 12);
-                    var spectacleNom = columns[4].Trim();
+                    var spectacleNom = Truncate(columns[4].Trim(), 20);
                     
                     if (!DateTime.TryParse(columns[5].Trim(), CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime horaire))
                     {
@@ -260,16 +257,64 @@ namespace Services.CsvImport
                         continue;
                     }
                     
-                    var typeTarifNom = columns[8].Trim();
+                    var typeTarifNom = Truncate(columns[8].Trim(), 20);
 
                     using var transaction = await _dbContext.Database.BeginTransactionAsync();
                     try
                     {
-                        var spectacle = await GetOrCreateSpectacle(spectacleNom);
-                        var tarif = await GetOrCreateTarif(typeTarifNom);
-                        var programmation = await GetOrCreateProgrammation(spectacle.SpectacleId, horaire, lieu);
+                        // Vérifier si le spectacle existe déjà
+                        var spectacle = await _dbContext.Spectacles
+                            .FirstOrDefaultAsync(s => s.Titre == spectacleNom);
 
-                var billet = new Billet
+                        if (spectacle == null)
+                        {
+                            errors.Add($"Spectacle non trouvé à la ligne {lineNumber}: '{spectacleNom}'");
+                            continue;
+                        }
+
+                        // Vérifier si la programmation existe déjà
+                        var dateOnly = DateOnly.FromDateTime(horaire.Date);
+                        var timeOnly = TimeOnly.FromTimeSpan(horaire.TimeOfDay);
+                        
+                        var programmation = await _dbContext.Programmations
+                            .FirstOrDefaultAsync(p => 
+                                p.SpectacleId == spectacle.SpectacleId && 
+                                p.Date == dateOnly &&
+                                p.Lieu == lieu);
+
+                        if (programmation == null)
+                        {
+                            errors.Add($"Programmation non trouvée à la ligne {lineNumber}: '{spectacleNom}' le {dateOnly} à {timeOnly}");
+                            continue;
+                        }
+
+                        // Vérifier si le type de tarif existe déjà
+                        var tarif = await _dbContext.TypesTarifs
+                            .FirstOrDefaultAsync(t => t.NomTarif == typeTarifNom);
+
+                        if (tarif == null)
+                        {
+                            _logger.LogWarning($"Type de tarif non trouvé: '{typeTarifNom}'. Création d'un nouveau type de tarif.");
+                            tarif = new TypesTarif { NomTarif = typeTarifNom };
+                            _dbContext.TypesTarifs.Add(tarif);
+                            await _dbContext.SaveChangesAsync();
+                        }
+
+                        // Vérifier si le billet existe déjà
+                        var billetExistant = await _dbContext.Billets
+                            .FirstOrDefaultAsync(b => 
+                                b.ProgrammationId == programmation.ProgrammationId &&
+                                b.Nom == nom &&
+                                b.Prenom == prenom &&
+                                b.TarifId == tarif.TarifId);
+
+                        if (billetExistant != null)
+                        {
+                            _logger.LogWarning($"Billet déjà existant à la ligne {lineNumber} pour {nom} {prenom}");
+                            continue;
+                        }
+
+                        var billet = new Billet
                         {
                             Civilite = civilite,
                             Nom = nom,
@@ -283,10 +328,11 @@ namespace Services.CsvImport
                         await _dbContext.SaveChangesAsync();
                         await transaction.CommitAsync();
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         await transaction.RollbackAsync();
-                        throw;
+                        _logger.LogError(ex, "Erreur lors de l'import du billet à la ligne {LineNumber}", lineNumber);
+                        errors.Add($"Erreur à la ligne {lineNumber}: {ex.Message}");
                     }
                 }
                 catch (Exception ex)

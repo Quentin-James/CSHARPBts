@@ -1,0 +1,28 @@
+<Window x:Class="CSVParsing.ChevauchementWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Chevauchements de spectacles" Height="600" Width="1000"
+        WindowStartupLocation="CenterScreen">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Liste des chevauchements de spectacles" 
+                   FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+
+        <DataGrid Grid.Row="1" x:Name="ChevauchementGrid" AutoGenerateColumns="False" 
+                  IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Date" Binding="{Binding Date, StringFormat=d}" Width="100"/>
+                <DataGridTextColumn Header="Spectacle" Binding="{Binding Titre}" Width="200"/>
+                <DataGridTextColumn Header="Heure début" Binding="{Binding HeureDebut, StringFormat=t}" Width="100"/>
+                <DataGridTextColumn Header="Heure fin" Binding="{Binding HeureFin, StringFormat=t}" Width="100"/>
+                <DataGridTextColumn Header="Spectacle en conflit" Binding="{Binding TitreChevauchement}" Width="200"/>
+                <DataGridTextColumn Header="Heure début conflit" Binding="{Binding HeureDebutChevauchement, StringFormat=t}" Width="100"/>
+                <DataGridTextColumn Header="Heure fin conflit" Binding="{Binding HeureFinChevauchement, StringFormat=t}" Width="100"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window> 

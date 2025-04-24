@@ -1,18 +1,19 @@
 ﻿using Microsoft.Win32;
-using System;
+using Services.DTOs;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Linq;
 
 namespace CSVParsing
 {
     public partial class MainWindow : Window
     {
         private readonly HttpClient _httpClient;
+        private bool _saisonImported = false;
+        private const int COLONNES_SAISON = 17;
+        private const int COLONNES_BILLET = 9;
 
         public MainWindow()
         {
@@ -25,10 +26,21 @@ namespace CSVParsing
             
             _httpClient = new HttpClient(handler)
             {
-                BaseAddress = new Uri("https://localhost:7132/")
+                BaseAddress = new Uri("http://localhost:8080/")
             };
             
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            // Désactiver initialement les boutons
+            UpdateButtonsState();
+        }
+
+        private void UpdateButtonsState()
+        {
+            // Le bouton d'import est toujours actif
+            ImportButton.IsEnabled = true;
+            // Les autres boutons ne sont actifs que si la saison a été importée
+            ChevauchementButton.IsEnabled = _saisonImported;
         }
 
         private async void ImportCsvButton_Click(object sender, RoutedEventArgs e)
@@ -47,41 +59,41 @@ namespace CSVParsing
                     ProgressBar.Visibility = Visibility.Visible;
                     ProgressBar.Value = 0;
 
-                    await ImportCsvAsync(openFileDialog.FileName);
-                    MessageBox.Show("Importation réussie.", "Succès", MessageBoxButton.OK, MessageBoxImage.Information);
+                    var firstLine = File.ReadLines(openFileDialog.FileName).First();
+                    var columnCount = firstLine.Split(';').Length;
 
-                    // Vérification des chevauchements
-                    var responseChev = await _httpClient.GetAsync("api/spectacles/chevauchements");
-                    if (responseChev.IsSuccessStatusCode)
+                    // Si c'est le fichier des saisons (17 colonnes)
+                    if (columnCount == COLONNES_SAISON && !_saisonImported)
                     {
-                        var chevauchements = await responseChev.Content.ReadFromJsonAsync<string[]>();
-                        if (chevauchements != null && chevauchements.Length > 0)
-                        {
-                            MessageBox.Show(
-                                $"Attention, il y a {chevauchements.Length} chevauchement(s) :\n\n" + 
-                                string.Join("\n", chevauchements),
-                                "Chevauchements détectés",
-                                MessageBoxButton.OK,
-                                MessageBoxImage.Warning
-                            );
-                        }
+                        await ImportCsvAsync(openFileDialog.FileName);
+                        _saisonImported = true;
+                        UpdateButtonsState();
+                        MessageBox.Show("Import des saisons réussi. Vous pouvez maintenant importer les billets.", 
+                                      "Succès", 
+                                      MessageBoxButton.OK, 
+                                      MessageBoxImage.Information);
                     }
-
-                    // Vérification des billets
-                    var responseBillets = await _httpClient.GetAsync("api/billets/verification");
-                    if (responseBillets.IsSuccessStatusCode)
+                    else if (columnCount == COLONNES_BILLET && !_saisonImported)
                     {
-                        var billetsInvalides = await responseBillets.Content.ReadFromJsonAsync<string[]>();
-                        if (billetsInvalides != null && billetsInvalides.Length > 0)
-                        {
-                            MessageBox.Show(
-                                $"Attention, il y a {billetsInvalides.Length} billet(s) invalide(s) :\n\n" + 
-                                string.Join("\n", billetsInvalides),
-                                "Billets invalides détectés",
-                                MessageBoxButton.OK,
-                                MessageBoxImage.Warning
-                            );
-                        }
+                        MessageBox.Show("Vous devez d'abord importer le fichier CSV des saisons.", 
+                                      "Import requis", 
+                                      MessageBoxButton.OK, 
+                                      MessageBoxImage.Warning);
+                    }
+                    else if (columnCount != COLONNES_SAISON && columnCount != COLONNES_BILLET)
+                    {
+                        MessageBox.Show($"Format de fichier incorrect. Le fichier doit avoir {COLONNES_SAISON} colonnes pour les saisons ou {COLONNES_BILLET} colonnes pour les billets.", 
+                                      "Erreur", 
+                                      MessageBoxButton.OK, 
+                                      MessageBoxImage.Error);
+                    }
+                    else
+                    {
+                        await ImportCsvAsync(openFileDialog.FileName);
+                        MessageBox.Show("Importation des billets réussie.", 
+                                      "Succès", 
+                                      MessageBoxButton.OK, 
+                                      MessageBoxImage.Information);
                     }
                 }
                 catch (Exception ex)
@@ -96,6 +108,22 @@ namespace CSVParsing
             }
         }
 
+        private void ChevauchementButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!_saisonImported)
+            {
+                MessageBox.Show("Vous devez d'abord importer le fichier CSV des saisons.", 
+                              "Import requis", 
+                              MessageBoxButton.OK, 
+                              MessageBoxImage.Warning);
+                return;
+            }
+
+            var chevauchementWindow = new ChevauchementWindow();
+            chevauchementWindow.Owner = this;
+            chevauchementWindow.ShowDialog();
+        }
+
         private async Task ImportCsvAsync(string filePath)
         {
             var lines = await File.ReadAllLinesAsync(filePath);
@@ -104,7 +132,7 @@ namespace CSVParsing
 
             var firstLine = lines.First();
             var columnCount = firstLine.Split(';').Length;
-            var endpoint = columnCount == 9 ? "billets" : "spectacles";
+            var endpoint = columnCount == COLONNES_SAISON ? "spectacles" : "billets";
 
             using var form = new MultipartFormDataContent();
             using var fileStream = File.OpenRead(filePath);
