@@ -1,7 +1,5 @@
 ﻿using DAL.Modeles;
 using Microsoft.EntityFrameworkCore;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace DAL.Interfaces
 {

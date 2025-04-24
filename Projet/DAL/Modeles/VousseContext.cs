@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using DAL.Interfaces;
+﻿using DAL.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Modeles

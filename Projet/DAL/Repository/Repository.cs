@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq.Expressions;
-using DAL.Interfaces;
+﻿using DAL.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace DAL.Repository
 {

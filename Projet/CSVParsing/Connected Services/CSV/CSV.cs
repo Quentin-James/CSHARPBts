@@ -16,7 +16,7 @@
 
 namespace CSVParsing.CSV
 {
-    using Services.DTOs;
+    using global::Services.DTOs;
     using System = global::System;
 
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.19.0.0 (NJsonSchema v10.9.0.0 (Newtonsoft.Json v13.0.3.0))")]

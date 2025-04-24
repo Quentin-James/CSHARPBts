@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
-using System.Threading.Tasks;
 
 namespace WebApplication1.Controllers
 {
@@ -21,9 +20,17 @@ namespace WebApplication1.Controllers
             var billet = await _billetService.GetByIdAsync(id);
             if (billet == null)
             {
-                return NotFound();
+                return NotFound(new { message = "Billet non trouvé" });
             }
-            return Ok(billet);
+            return Ok(new { 
+                valide = true,
+                billet = new {
+                    id = billet.BilletId,
+                    spectacle = billet.Programmation?.Spectacle?.Titre,
+                    date = billet.Programmation?.Date,
+                    heure = billet.Programmation?.Heure
+                }
+            });
         }
     }
 }
