@@ -8,7 +8,7 @@ using Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configuration de Kestrel pour écouter sur toutes les interfaces
+//Kestrel configuration
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.ListenAnyIP(8080, listenOptions =>

@@ -28,7 +28,7 @@ namespace DataAccess.Extensions
 
         public static IServiceCollection AddRepositories(this IServiceCollection services, IConfiguration config)
         {
-            // Ne garder que les repositories essentiels pour l'API
+            
             services.AddScoped<IRepository<Spectacle>, RepoSpectacles>();
             services.AddScoped<IRepository<Programmation>, RepoProgrammation>();
             services.AddScoped<IRepository<Billet>, RepoBillets>();

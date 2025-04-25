@@ -31,15 +31,14 @@ namespace CSVParsing
             
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            // Désactiver initialement les boutons
             UpdateButtonsState();
         }
 
         private void UpdateButtonsState()
         {
-            // Le bouton d'import est toujours actif
+            // button always enabled
             ImportButton.IsEnabled = true;
-            // Les autres boutons ne sont actifs que si la saison a été importée
+            // enabled when saison is imported
             ChevauchementButton.IsEnabled = _saisonImported;
         }
 
@@ -62,7 +61,7 @@ namespace CSVParsing
                     var firstLine = File.ReadLines(openFileDialog.FileName).First();
                     var columnCount = firstLine.Split(';').Length;
 
-                    // Si c'est le fichier des saisons (17 colonnes)
+                    
                     if (columnCount == COLONNES_SAISON && !_saisonImported)
                     {
                         await ImportCsvAsync(openFileDialog.FileName);
@@ -127,7 +126,7 @@ namespace CSVParsing
         private async Task ImportCsvAsync(string filePath)
         {
             var lines = await File.ReadAllLinesAsync(filePath);
-            var totalLines = lines.Length - 1; // -1 pour l'en-tête
+            var totalLines = lines.Length - 1; 
             var processedLines = 0;
 
             var firstLine = lines.First();
@@ -143,12 +142,12 @@ namespace CSVParsing
             var response = await _httpClient.PostAsync($"api/csv-import/{endpoint}", form);
             response.EnsureSuccessStatusCode();
 
-            // Mise à jour de la progression
+            
             while (processedLines < totalLines)
             {
                 processedLines++;
                 ProgressBar.Value = (double)processedLines / totalLines * 100;
-                await Task.Delay(10); // Petit délai pour voir la progression
+                await Task.Delay(10); 
             }
         }
     }

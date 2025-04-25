@@ -262,7 +262,6 @@ namespace Services.CsvImport
                     using var transaction = await _dbContext.Database.BeginTransactionAsync();
                     try
                     {
-                        // Vérifier si le spectacle existe déjà
                         var spectacle = await _dbContext.Spectacles
                             .FirstOrDefaultAsync(s => s.Titre == spectacleNom);
 
@@ -272,7 +271,6 @@ namespace Services.CsvImport
                             continue;
                         }
 
-                        // Vérifier si la programmation existe déjà
                         var dateOnly = DateOnly.FromDateTime(horaire.Date);
                         var timeOnly = TimeOnly.FromTimeSpan(horaire.TimeOfDay);
                         
@@ -288,7 +286,6 @@ namespace Services.CsvImport
                             continue;
                         }
 
-                        // Vérifier si le type de tarif existe déjà
                         var tarif = await _dbContext.TypesTarifs
                             .FirstOrDefaultAsync(t => t.NomTarif == typeTarifNom);
 
@@ -300,7 +297,6 @@ namespace Services.CsvImport
                             await _dbContext.SaveChangesAsync();
                         }
 
-                        // Vérifier si le billet existe déjà
                         var billetExistant = await _dbContext.Billets
                             .FirstOrDefaultAsync(b => 
                                 b.ProgrammationId == programmation.ProgrammationId &&
@@ -365,46 +361,6 @@ namespace Services.CsvImport
             return spectacle;
         }
 
-        private async Task<TypesTarif> GetOrCreateTarif(string nom)
-        {
-            var tarif = await _dbContext.TypesTarifs.FirstOrDefaultAsync(t => t.NomTarif == nom);
-            
-            if (tarif == null)
-            {
-                tarif = new TypesTarif { NomTarif = nom };
-                _dbContext.TypesTarifs.Add(tarif);
-                await _dbContext.SaveChangesAsync();
-            }
-            
-            return tarif;
-        }
-
-        private async Task<Programmation> GetOrCreateProgrammation(int spectacleId, DateTime dateHeure, string lieu)
-        {
-            var dateOnly = DateOnly.FromDateTime(dateHeure.Date);
-            var timeOnly = TimeOnly.FromTimeSpan(dateHeure.TimeOfDay);
-            
-            var programmation = await _dbContext.Programmations
-                .FirstOrDefaultAsync(p => 
-                    p.SpectacleId == spectacleId && 
-                    p.Date == dateOnly &&
-                    p.Lieu == lieu);
-            
-            if (programmation == null)
-            {
-                programmation = new Programmation
-                {
-                    Date = dateOnly,
-                    Heure = timeOnly,
-                    Lieu = lieu,
-                    SpectacleId = spectacleId
-                };
-                _dbContext.Programmations.Add(programmation);
-                await _dbContext.SaveChangesAsync();
-            }
-            
-            return programmation;
-        }
 
         private static Encoding GetFileEncoding(string filePath)
         {
