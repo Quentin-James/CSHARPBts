@@ -18,7 +18,7 @@ builder.WebHost.ConfigureKestrel(options =>
 });
 
 // Database
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new Exception("ConnectionString 'DefaultConnection' manquante");
 builder.Services.ConfigureDatabase(connectionString);
 
@@ -69,14 +69,12 @@ builder.Services.AddCors(options =>
 // Build and configure app
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(c => {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-        c.RoutePrefix = string.Empty;
-    });
-}
+// Activation de Swagger en production
+app.UseSwagger();
+app.UseSwaggerUI(c => {
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+    c.RoutePrefix = string.Empty;
+});
 
 // app.UseHttpsRedirection();
 
