@@ -1,6 +1,7 @@
 using DAL.Interfaces;
 using DAL.Modeles;
 using Microsoft.EntityFrameworkCore;
+using Services.DTOs;
 using Services.Interfaces;
 
 namespace Services.Implementations
@@ -22,6 +23,22 @@ namespace Services.Implementations
                 .Include(b => b.Programmation)
                 .ThenInclude(p => p.Spectacle)
                 .FirstOrDefaultAsync(b => b.BilletId == id);
+        }
+
+        public async Task<IEnumerable<FrequentationDTO>> GetFrequentationBySpectacleAsync(int spectacleId)
+        {
+            var frequentation = await _context.Programmations
+                .Where(p => p.SpectacleId == spectacleId)
+                .Select(p => new FrequentationDTO
+                {
+                    SpectacleId = p.SpectacleId ?? 0,
+                    TitreSpectacle = p.Spectacle!.Titre,
+                    DateRepresentation = p.Date,
+                    NombreBilletsVendus = p.Billets.Count
+                })
+                .ToListAsync();
+
+            return frequentation;
         }
     }
 } 

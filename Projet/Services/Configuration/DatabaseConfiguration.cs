@@ -10,7 +10,10 @@ namespace Services.Configuration
         public static void ConfigureDatabase(this IServiceCollection services, string connectionString)
         {
             services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(connectionString));
+                options.UseSqlServer(connectionString, sqlOptions => 
+                {
+                    sqlOptions.CommandTimeout(0); // Désactive le timeout
+                }));
             
             services.AddScoped<AppDbContext>();
             services.AddScoped<IAppDbContext>(provider => provider.GetRequiredService<AppDbContext>());

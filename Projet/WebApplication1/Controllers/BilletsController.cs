@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
+using System.Text;
 
 namespace WebApplication1.Controllers
 {
@@ -31,6 +32,35 @@ namespace WebApplication1.Controllers
                     heure = billet.Programmation?.Heure
                 }
             });
+        }
+
+        [HttpGet("frequentation/{spectacleId}")]
+        public async Task<IActionResult> GetFrequentationBySpectacle(int spectacleId)
+        {
+            try
+            {
+                var frequentation = await _billetService.GetFrequentationBySpectacleAsync(spectacleId);
+                
+                if (!frequentation.Any())
+                {
+                    return NotFound(new { message = "Aucune représentation trouvée pour ce spectacle" });
+                }
+
+                var csvContent = new StringBuilder();
+                csvContent.AppendLine("id_spectacle,titre_spectacle,date_representation,nombre_billets_vendus");
+                
+                foreach (var item in frequentation)
+                {
+                    csvContent.AppendLine($"{item.SpectacleId},\"{item.TitreSpectacle}\",{item.DateRepresentation:yyyy-MM-dd},{item.NombreBilletsVendus}");
+                }
+
+                var bytes = Encoding.UTF8.GetBytes(csvContent.ToString());
+                return File(bytes, "text/csv", $"frequentation_spectacle_{spectacleId}.csv");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Erreur lors de la récupération des données de fréquentation", error = ex.Message });
+            }
         }
     }
 }

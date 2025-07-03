@@ -21,7 +21,10 @@ namespace DataAccess.Extensions
         {
             var connectionString = config.GetConnectionString("DefaultConnection");
 
-            services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(connectionString));
+            services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(connectionString, sqlOptions => 
+            {
+                sqlOptions.CommandTimeout(0); // Désactive le timeout
+            }));
             services.AddIdentityCore<IdentityUser>()
                 .AddEntityFrameworkStores<AppDbContext>();
         }
